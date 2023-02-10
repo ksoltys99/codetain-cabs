@@ -1,9 +1,14 @@
 #!/bin/bash
 set -e
 
-SERVER="postgres";
-PW="postgres321";
-DB="codetain_cabs";
+while getopts s:p:d: flag
+do
+    case "${flag}" in
+        s) SERVER=${OPTARG};;
+        p) PW=${OPTARG};;
+        d) DB=${OPTARG};;
+    esac
+done
 
 echo "echo stop & remove old docker [$SERVER] and starting new fresh instance of [$SERVER]"
 (docker kill $SERVER || :) && \

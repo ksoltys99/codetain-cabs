@@ -16,7 +16,7 @@ export class AddUserDto {
   surname: string;
 
   @IsNotEmpty()
-  dateOfBirth: string;
+  dateOfBirth: Date;
 
   @IsNotEmpty()
   address: string;

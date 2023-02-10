@@ -4,14 +4,15 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 export class User {
   @PrimaryGeneratedColumn({
     type: 'bigint',
-    name: 'user_id',
+    name: 'id',
   })
   id: number;
 
   @Column({
-    name: 'email_address',
+    name: 'email',
     nullable: false,
     default: '',
+    unique: true,
   })
   email: string;
 
@@ -39,9 +40,9 @@ export class User {
   @Column({
     name: 'date_of_birth',
     nullable: false,
-    default: '',
+    default: new Date('1970-01-01T00:00:01'),
   })
-  dateOfBirth: string;
+  dateOfBirth: Date;
 
   @Column({
     name: 'address',
@@ -49,4 +50,18 @@ export class User {
     default: '',
   })
   address: string;
+
+  @Column({
+    name: 'verified',
+    nullable: false,
+    default: false,
+  })
+  verified: boolean;
+
+  @Column({
+    name: 'confirmationCode',
+    nullable: false,
+    default: '',
+  })
+  confirmationCode: string;
 }

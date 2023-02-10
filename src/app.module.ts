@@ -2,8 +2,10 @@ import { Dependencies, Module } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { User } from './model/user.entity';
-import { RegisterModule } from './modules/register.module';
+import { User } from './user/user.entity';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { EmailModule } from './email/email.module';
 
 @Dependencies(DataSource)
 @Module({
@@ -23,7 +25,9 @@ import { RegisterModule } from './modules/register.module';
       }),
       inject: [ConfigService],
     }),
-    RegisterModule,
+    UserModule,
+    AuthModule,
+    EmailModule,
   ],
   controllers: [],
   providers: [],
