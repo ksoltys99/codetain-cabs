@@ -14,7 +14,7 @@ import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { LocalAuthGuard } from 'src/auth/local-auth.guard';
 import RequestWithUser from 'src/auth/requestWithUser.interface';
-import { AddUserDto } from 'src/user/user.dto';
+import { AddUserDto } from 'src/user/dtos/user.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { UserService } from 'src/user/user.service';
 
@@ -33,7 +33,6 @@ export class AuthController {
     const cookie = this.authService.getCookieWithJwtToken(user.id);
     res.setHeader('Set-Cookie', cookie);
     user.password = undefined;
-    console.log(cookie);
     return res.send(user);
   }
 
@@ -47,8 +46,11 @@ export class AuthController {
   @HttpCode(200)
   @Post('register')
   @UsePipes(ValidationPipe)
-  addUser(@Body() addUserDto: AddUserDto) {
-    this.authService.register(addUserDto);
+  async addUser(@Body() addUserDto: AddUserDto, @Res() res: Response) {
+    await this.authService.register(addUserDto);
+    return res
+      .status(200)
+      .json('Account registered. Verification link has been sent.');
   }
 
   @UseGuards(JwtAuthGuard)

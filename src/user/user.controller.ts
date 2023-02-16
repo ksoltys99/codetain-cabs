@@ -5,9 +5,14 @@ import {
   Request,
   Put,
   Delete,
+  Res,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Response } from 'express';
+import { Body, UsePipes } from '@nestjs/common/decorators';
+import { UserEditDto } from './dtos/user-edit.dto';
 
 @Controller('user')
 export class UserController {
@@ -26,13 +31,16 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Put('profile/update')
-  updateProfile(@Request() req) {
-    return this.userService.updateProfile(req.body);
+  @UsePipes(ValidationPipe)
+  async updateProfile(@Body() userData: UserEditDto, @Res() res: Response) {
+    await this.userService.updateProfile(userData);
+    return res.status(200).send('Profile updated');
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('delete/:id')
-  deleteUser(@Request() req) {
-    return this.userService.deleteUser(req.params.id);
+  async deleteUser(@Request() req, @Res() res) {
+    await this.userService.deleteUser(req.params.id);
+    return res.status(200).send('User deleted');
   }
 }

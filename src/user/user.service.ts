@@ -1,17 +1,17 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AuthService } from 'src/auth/auth.service';
 import { EmailService } from 'src/email/email.service';
-import { AddUserDto } from 'src/user/user.dto';
+import { AddUserDto } from 'src/user/dtos/user.dto';
 import { User } from 'src/user/user.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { HttpException } from '@nestjs/common';
+import { UserEditDto } from './dtos/user-edit.dto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    private authService: AuthService,
     private emailService: EmailService,
   ) {}
   async addUser(addUserDto: AddUserDto) {
@@ -41,25 +41,52 @@ export class UserService {
       HttpStatus.NOT_FOUND,
     );
   }
-  async updateProfile(user: User) {
-    return await this.userRepository.update(
+  async updateProfile(user: UserEditDto) {
+    if (user.password) {
+      user.password = await bcrypt.hash(user.password, 10);
+    }
+    const result: UpdateResult = await this.userRepository.update(
       { id: user.id },
       {
         email: user.email,
+        password: user.password,
         name: user.name,
         surname: user.surname,
+        dateOfBirth: user.dateOfBirth,
+        address: user.address,
       },
     );
+    if (result.affected) return;
+    if (!result.affected)
+      throw new HttpException(
+        'User with that id does not exist',
+        HttpStatus.BAD_REQUEST,
+      );
+    else
+      throw new HttpException(
+        'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
   }
 
   async confirmUser(confirmationCode: string) {
-    return this.userRepository.update(
+    const result = await this.userRepository.update(
       { confirmationCode: confirmationCode },
       { verified: true },
     );
+    if (!result.affected)
+      throw new HttpException(
+        'User with that id does not exist',
+        HttpStatus.BAD_REQUEST,
+      );
   }
 
   async deleteUser(id: number) {
-    return this.userRepository.delete({ id: id });
+    const result: DeleteResult = await this.userRepository.delete({ id: id });
+    if (!result.affected)
+      throw new HttpException(
+        'User with that id does not exist',
+        HttpStatus.BAD_REQUEST,
+      );
   }
 }
