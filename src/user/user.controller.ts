@@ -8,7 +8,7 @@ import {
   Res,
   ValidationPipe,
 } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Response } from 'express';
 import { Body, UsePipes } from '@nestjs/common/decorators';

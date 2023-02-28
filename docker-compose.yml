@@ -1,7 +1,7 @@
 version: "3"
 services:
   postgres:
-    image: postgres:15.2
+    image: postgres:latest
     networks:
       - postgres
     volumes:
@@ -10,7 +10,7 @@ services:
       - docker.env
  
   codetain-cabs:
-    image: codetain-cabs
+    image: codetain_cabs_test
     env_file:
       - .env
     ports:

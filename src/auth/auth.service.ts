@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcryptjs';
-import { AddUserDto } from 'src/user/dtos/user.dto';
+import { AddUserDto } from '../user/dtos/user.dto';
 import { HttpException } from '@nestjs/common/exceptions';
 import { HttpStatus } from '@nestjs/common/enums';
-import { PostgresErrorCode } from 'src/database/postgresErrorCodes.enum';
+import { PostgresErrorCode } from '../database/postgresErrorCodes.enum';
 import { Inject } from '@nestjs/common/decorators';
 import { forwardRef } from '@nestjs/common/utils';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { TokenPayload } from './tokenPayload.interface';
-import { EmailService } from 'src/email/email.service';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class AuthService {
@@ -56,13 +56,6 @@ export class AuthService {
     }
     return null;
   }
-
-  // async login(user: User) {
-  //   const payload = { username: user.email, sub: user.id };
-  //   return {
-  //     access_token: this.jwtService.sign(payload),
-  //   };
-  // }
 
   public getCookieWithJwtToken(userId: number) {
     const payload: TokenPayload = { userId };
