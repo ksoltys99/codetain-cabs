@@ -31,10 +31,11 @@ export class AuthService {
 
       createdUser.password = undefined;
 
-      await this.emailService.sendMail(createdUser);
+      await this.emailService.sendConfirmationMail(createdUser);
 
       return createdUser;
     } catch (error) {
+      console.log(error);
       if (error?.code === PostgresErrorCode.UniqueViolation) {
         throw new HttpException(
           'User with that email already exists',

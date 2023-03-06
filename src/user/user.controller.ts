@@ -4,7 +4,6 @@ import {
   UseGuards,
   Request,
   Put,
-  Delete,
   Res,
   ValidationPipe,
 } from '@nestjs/common';
@@ -18,11 +17,6 @@ import { UserEditDto } from './dtos/user-edit.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get()
-  getUsers() {
-    return this.userService.getUsers();
-  }
-
   @UseGuards(JwtAuthGuard)
   @Get('profile/:id')
   getProfile(@Request() req) {
@@ -35,12 +29,5 @@ export class UserController {
   async updateProfile(@Body() userData: UserEditDto, @Res() res: Response) {
     await this.userService.updateProfile(userData);
     return res.status(200).send('Profile updated');
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Delete('delete/:id')
-  async deleteUser(@Request() req, @Res() res) {
-    await this.userService.deleteUser(req.params.id);
-    return res.status(200).send('User deleted');
   }
 }

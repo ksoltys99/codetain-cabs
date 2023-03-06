@@ -3,16 +3,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EmailService } from '../email/email.service';
 import { AddUserDto } from '../user/dtos/user.dto';
 import { User } from '../user/user.entity';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { HttpException } from '@nestjs/common';
 import { UserEditDto } from './dtos/user-edit.dto';
 import * as bcrypt from 'bcryptjs';
+import { Role } from '../user/user-role.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private emailService: EmailService,
+    private readonly configService: ConfigService,
   ) {}
   async addUser(addUserDto: AddUserDto) {
     const newUser = this.userRepository.create(addUserDto);
@@ -20,12 +23,16 @@ export class UserService {
       newUser.email,
       newUser.id,
     );
+
+    if (
+      addUserDto.secret &&
+      addUserDto.secret === this.configService.get('ADMIN_SECRET_KEY')
+    ) {
+      newUser.role = new Role('admin');
+    } else newUser.role = new Role('user');
+
     await this.userRepository.save(newUser);
     return newUser;
-  }
-
-  getUsers() {
-    return this.userRepository.find();
   }
 
   async getUserByEmail(email: string) {
@@ -78,15 +85,6 @@ export class UserService {
     if (!result.affected)
       throw new HttpException(
         'Wrong confirmation code',
-        HttpStatus.BAD_REQUEST,
-      );
-  }
-
-  async deleteUser(id: number) {
-    const result: DeleteResult = await this.userRepository.delete({ id: id });
-    if (!result.affected)
-      throw new HttpException(
-        'User with that id does not exist',
         HttpStatus.BAD_REQUEST,
       );
   }
