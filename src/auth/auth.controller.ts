@@ -12,11 +12,11 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
-import { LocalAuthGuard } from 'src/auth/local-auth.guard';
-import RequestWithUser from 'src/auth/requestWithUser.interface';
-import { AddUserDto } from 'src/user/dtos/user.dto';
+import { LocalAuthGuard } from '../auth/local-auth.guard';
+import RequestWithUser from '../auth/requestWithUser.interface';
+import { AddUserDto } from '../user/dtos/user.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 
 @Controller('auth')
 export class AuthController {

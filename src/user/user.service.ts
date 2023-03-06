@@ -1,8 +1,8 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EmailService } from 'src/email/email.service';
-import { AddUserDto } from 'src/user/dtos/user.dto';
-import { User } from 'src/user/user.entity';
+import { EmailService } from '../email/email.service';
+import { AddUserDto } from '../user/dtos/user.dto';
+import { User } from '../user/user.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { HttpException } from '@nestjs/common';
 import { UserEditDto } from './dtos/user-edit.dto';
@@ -20,7 +20,8 @@ export class UserService {
       newUser.email,
       newUser.id,
     );
-    return this.userRepository.save(newUser);
+    await this.userRepository.save(newUser);
+    return newUser;
   }
 
   getUsers() {
@@ -76,7 +77,7 @@ export class UserService {
     );
     if (!result.affected)
       throw new HttpException(
-        'User with that id does not exist',
+        'Wrong confirmation code',
         HttpStatus.BAD_REQUEST,
       );
   }
