@@ -1,13 +1,6 @@
-import {
-  Controller,
-  Get,
-  Delete,
-  Request,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Delete, Body, Res, UseGuards } from '@nestjs/common';
 import { AdministrationService } from './administration.service';
-import { Response } from 'express';
+import { UserDeleteDto } from 'src/user/dtos/user-delete.dto';
 
 @Controller('administration')
 export class AdministrationController {
@@ -18,9 +11,9 @@ export class AdministrationController {
     return this.administrationService.getUsers();
   }
 
-  @Delete('delete/:id')
-  async deleteUser(@Request() req, @Res() res) {
-    await this.administrationService.deleteUser(req.params.id);
+  @Delete('delete')
+  async deleteUser(@Body() user: UserDeleteDto, @Res() res) {
+    await this.administrationService.deleteUser(user);
     return res.status(200).send('User deleted');
   }
 
