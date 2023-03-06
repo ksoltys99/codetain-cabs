@@ -32,10 +32,10 @@ export class EmailService {
     return this.nodemailerTransport.sendMail(options);
   }
 
-  async sendDeletionMail(user: User) {
+  async sendDeletionMail(email: string) {
     const options: Mail.Options = {
       from: 'codetaincabs.service@gmail.com',
-      to: user.email,
+      to: email,
       subject: 'Account deleted',
       html: `<p>Your account has been deleted</p>`,
     };
