@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { EmailModule } from './email/email.module';
 import { DatabaseModule } from './database/database.module';
+import { AdministrationModule } from './administration/administration.module';
 
 @Dependencies(DataSource)
 @Module({
@@ -15,6 +16,7 @@ import { DatabaseModule } from './database/database.module';
     AuthModule,
     EmailModule,
     DatabaseModule,
+    AdministrationModule,
   ],
   controllers: [],
   providers: [],
