@@ -22,12 +22,22 @@ export class EmailService {
     });
   }
 
-  async sendMail(user: User) {
+  async sendConfirmationMail(user: User) {
     const options: Mail.Options = {
       from: 'codetaincabs.service@gmail.com',
       to: user.email,
-      subject: 'Test',
+      subject: 'Confirm your account',
       html: `<p>Click <a href="http://localhost:3000/auth/activate/${user.confirmationCode}">here</a> to activate the account: </p>`,
+    };
+    return this.nodemailerTransport.sendMail(options);
+  }
+
+  async sendDeletionMail(email: string) {
+    const options: Mail.Options = {
+      from: 'codetaincabs.service@gmail.com',
+      to: email,
+      subject: 'Account deleted',
+      html: `<p>Your account has been deleted</p>`,
     };
     return this.nodemailerTransport.sendMail(options);
   }
