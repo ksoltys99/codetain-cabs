@@ -7,7 +7,7 @@ import { Repository, UpdateResult } from 'typeorm';
 import { HttpException } from '@nestjs/common';
 import { UserEditDto } from './dtos/user-edit.dto';
 import * as bcrypt from 'bcryptjs';
-import { Role } from '../user/user-role.entity';
+import { Role } from '../role/role.entity';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -24,20 +24,22 @@ export class UserService {
       newUser.id,
     );
 
-    if (
-      addUserDto.secret &&
-      addUserDto.secret === this.configService.get('ADMIN_SECRET_KEY')
-    ) {
-      newUser.role = new Role('admin');
-    } else newUser.role = new Role('user');
+    newUser.role =
+      addUserDto?.secret === this.configService.get('ADMIN_SECRET_KEY')
+        ? new Role('admin')
+        : new Role('user');
 
     await this.userRepository.save(newUser);
     return newUser;
   }
 
   async getUserByEmail(email: string) {
-    const user = await this.userRepository.findOneBy({ email });
-    return user;
+    const user = await this.userRepository.find({
+      relations: { role: true },
+      where: { email: email },
+    });
+
+    return user[0];
   }
   async getById(id: number) {
     const user = await this.userRepository.findOneBy({ id });

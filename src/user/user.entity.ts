@@ -1,4 +1,4 @@
-import { Role } from '../user/user-role.entity';
+import { Role } from '../role/role.entity';
 import {
   Column,
   Entity,
@@ -57,6 +57,18 @@ export class User {
     default: '',
   })
   address: string;
+
+  @Column({
+    name: 'coords_lat',
+    nullable: true,
+  })
+  coordsLat: string;
+
+  @Column({
+    name: 'coords_lng',
+    nullable: true,
+  })
+  coordsLng: string;
 
   @Column({
     name: 'verified',

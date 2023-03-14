@@ -2,7 +2,7 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmailService } from 'src/email/email.service';
 import { UserDeleteDto } from 'src/user/dtos/user-delete.dto';
-import { Role } from 'src/user/user-role.entity';
+import { Role } from 'src/role/role.entity';
 import { User } from 'src/user/user.entity';
 import { Repository, DeleteResult } from 'typeorm';
 

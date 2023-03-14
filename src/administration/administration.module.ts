@@ -3,7 +3,7 @@ import { AdministrationService } from './administration.service';
 import { AdministrationController } from './administration.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../user/user.entity';
-import { Role } from '../user/user-role.entity';
+import { Role } from '../role/role.entity';
 import { EmailModule } from '../email/email.module';
 
 @Module({

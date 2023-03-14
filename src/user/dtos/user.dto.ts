@@ -23,4 +23,7 @@ export class AddUserDto {
 
   @IsOptional()
   secret?: string;
+
+  coordsLat?: string;
+  coordsLng?: string;
 }

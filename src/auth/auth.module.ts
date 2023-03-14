@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { EmailModule } from '../email/email.module';
+import { MapsModule } from 'src/maps/maps.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { EmailModule } from '../email/email.module';
       signOptions: { expiresIn: '3600s' },
     }),
     EmailModule,
+    MapsModule,
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService, LocalStrategy],
