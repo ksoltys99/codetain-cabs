@@ -1,7 +1,6 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmailService } from '../email/email.service';
-import { AddUserDto } from '../user/dtos/user.dto';
 import { User } from '../user/user.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { HttpException } from '@nestjs/common';
@@ -9,15 +8,19 @@ import { UserEditDto } from './dtos/user-edit.dto';
 import * as bcrypt from 'bcryptjs';
 import { Role } from '../role/role.entity';
 import { ConfigService } from '@nestjs/config';
+import { UserWithAddressDto } from './dtos/userWithCoords.dto';
+import { Address } from './adress.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Address)
+    private readonly addressRepository: Repository<Address>,
     private emailService: EmailService,
     private readonly configService: ConfigService,
   ) {}
-  async addUser(addUserDto: AddUserDto) {
+  async addUser(addUserDto: UserWithAddressDto) {
     const newUser = this.userRepository.create(addUserDto);
     newUser.confirmationCode = await this.emailService.createActivationLink(
       newUser.email,
@@ -63,7 +66,6 @@ export class UserService {
         name: user.name,
         surname: user.surname,
         dateOfBirth: user.dateOfBirth,
-        address: user.address,
       },
     );
     if (result.affected) return;
@@ -90,4 +92,6 @@ export class UserService {
         HttpStatus.BAD_REQUEST,
       );
   }
+
+  addAddress() {}
 }

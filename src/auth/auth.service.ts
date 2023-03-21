@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { TokenPayload } from './tokenPayload.interface';
 import { EmailService } from '../email/email.service';
 import { MapsService } from '../maps/maps.service';
+import { UserWithAddressDto } from 'src/user/dtos/userWithCoords.dto';
 
 @Injectable()
 export class AuthService {
@@ -32,8 +33,11 @@ export class AuthService {
       const createdUser = await this.userService.addUser({
         ...registrationData,
         password: hashedPassword,
-        coordsLat: userCoords.lat,
-        coordsLng: userCoords.lng,
+        addressWithCoords: {
+          name: registrationData.address,
+          coordsLat: userCoords.lat,
+          coordsLng: userCoords.lng,
+        },
       });
 
       createdUser.password = undefined;

@@ -9,16 +9,16 @@ export class Zone {
   id: number;
 
   @Column({
-    name: 'name',
+    name: 'voivodeship',
     nullable: false,
     unique: true,
   })
-  name: string;
+  voivodeship: string;
 
   @Column({
-    name: 'postal_code',
+    name: 'postal_code_prefix',
     nullable: false,
     unique: true,
   })
-  postalCode: string;
+  postalCodePrefix: string;
 }

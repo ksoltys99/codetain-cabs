@@ -3,9 +3,11 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Address } from './adress.entity';
 
 @Entity()
 export class User {
@@ -51,24 +53,24 @@ export class User {
   })
   dateOfBirth: Date;
 
-  @Column({
-    name: 'address',
-    nullable: false,
-    default: '',
-  })
-  address: string;
+  // @Column({
+  //   name: 'address',
+  //   nullable: false,
+  //   default: '',
+  // })
+  // address: string;
 
-  @Column({
-    name: 'coords_lat',
-    nullable: true,
-  })
-  coordsLat: string;
+  // @Column({
+  //   name: 'coords_lat',
+  //   nullable: true,
+  // })
+  // coordsLat: string;
 
-  @Column({
-    name: 'coords_lng',
-    nullable: true,
-  })
-  coordsLng: string;
+  // @Column({
+  //   name: 'coords_lng',
+  //   nullable: true,
+  // })
+  // coordsLng: string;
 
   @Column({
     name: 'verified',
@@ -76,6 +78,12 @@ export class User {
     default: false,
   })
   verified: boolean;
+
+  @ManyToOne(() => Address, (entity) => entity, {
+    cascade: true,
+  })
+  @JoinColumn()
+  addressWithCoords: Address;
 
   @Column({
     name: 'confirmationCode',

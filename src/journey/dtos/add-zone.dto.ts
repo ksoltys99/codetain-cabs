@@ -2,8 +2,8 @@ import { IsNotEmpty } from 'class-validator';
 
 export class AddZoneDto {
   @IsNotEmpty()
-  name: string;
+  voivodeship: string;
 
   @IsNotEmpty()
-  postalCode: string;
+  postalCodePrefix: string;
 }

@@ -4,10 +4,11 @@ import { User } from './user.entity';
 import { UserService } from './user.service';
 import { Repository } from 'typeorm';
 import { AddUserDto } from './dtos/user.dto';
+import { UserWithAddressDto } from './dtos/userWithCoords.dto';
 import { EmailService } from '../email/email.service';
 import { mockUserRepository } from './user.repository.mock';
-import { HttpException } from '@nestjs/common/exceptions';
-import { HttpStatus } from '@nestjs/common/enums';
+import { ConfigService } from '@nestjs/config';
+import { HttpException } from '@nestjs/common';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -22,10 +23,10 @@ describe('UserService', () => {
           useValue: {
             create: jest.fn((entity) => entity),
             save: jest.fn((entity) => entity),
-            findOneBy: jest.fn((entity) => {
-              if (entity.email == 'testmail1@gmail.com')
-                return mockUserRepository[0];
-              return null;
+            find: jest.fn((entity) => {
+              if (entity.where.email == 'testmail1@gmail.com')
+                return [mockUserRepository[0]];
+              return [null];
             }),
             update: jest.fn((entity) => entity),
             delete: jest.fn((entity) => entity),
@@ -35,9 +36,10 @@ describe('UserService', () => {
           provide: EmailService,
           useValue: {
             createActivationLink: jest.fn(() => 'activation_link'),
-            sendMail: jest.fn(() => {}),
+            sendConfirmationMail: jest.fn(() => {}),
           },
         },
+        ConfigService,
       ],
     }).compile();
 
@@ -50,13 +52,15 @@ describe('UserService', () => {
   });
 
   describe('When creating new user', () => {
-    const mockUser: AddUserDto = {
+    const mockUser: UserWithAddressDto = {
       email: 'testmail@gmail.com',
       password: 'testpassword123',
       name: 'testname',
       surname: 'testsurname',
       dateOfBirth: new Date('19:01:2000T00:00:01'),
       address: 'testaddress',
+      coordsLat: '0',
+      coordsLng: '0',
     };
 
     it('should not change user data', async () => {
@@ -91,12 +95,10 @@ describe('UserService', () => {
   describe('When confirming user account', () => {
     let confirmationCode = '123';
 
-    it('should throw http exception if code is wrong', async () => {
-      try {
-        await userService.confirmUser(confirmationCode);
-      } catch (e) {
-        expect(e.message).toBe('Wrong confirmation code');
-      }
+    it('should throw http exception if confirmation code is wrong', async () => {
+      await expect(() =>
+        userService.confirmUser(confirmationCode),
+      ).rejects.toThrow(HttpException);
     });
   });
 });

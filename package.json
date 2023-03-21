@@ -19,7 +19,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "TypeORM": "ts-node ./node_modules/TypeORM/cli.js -f ./ormconfig.json"
+    "TypeORM": "ts-node ./node_modules/TypeORM/cli.js -f ./ormconfig.json",
+    "typeorm": "typeorm-ts-node-commonjs"
   },
   "dependencies": {
     "@golevelup/ts-jest": "^0.3.5",

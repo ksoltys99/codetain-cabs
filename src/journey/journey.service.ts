@@ -11,11 +11,12 @@ export class JourneyService {
   ) {}
   async addZone(zone: AddZoneDto) {
     const newZone = this.zoneRepository.create(zone);
-    return this.zoneRepository.save(newZone);
+    await this.zoneRepository.save(newZone);
+    return newZone;
   }
-  async deleteZone(name: string) {
+  async deleteZone(postalCodePrefix: string) {
     const result: DeleteResult = await this.zoneRepository.delete({
-      name: name,
+      postalCodePrefix: postalCodePrefix,
     });
     if (!result.affected)
       throw new HttpException(

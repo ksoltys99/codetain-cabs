@@ -1,18 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Client } from '@googlemaps/google-maps-services-js';
 import { ConfigService } from '@nestjs/config';
+import { Coords } from './coords.interface';
 
 @Injectable()
 export class MapsService {
-  client: Client;
-  constructor(private readonly configService: ConfigService) {
-    this.client = new Client();
-  }
+  private apiKey: string = this.configService.get('GOOGLE_API_KEY');
+  constructor(
+    private readonly configService: ConfigService,
+    @Inject('GoogleMapsClient') private client: Client,
+  ) {}
 
-  async getGeolocalisation(address: string) {
+  async getGeolocalisation(address: string): Promise<Coords> {
     const args = {
       params: {
-        key: this.configService.get('GOOGLE_API_KEY'),
+        key: this.apiKey,
         address: address,
       },
     };
