@@ -11,7 +11,7 @@ export class Zone {
   @Column({
     name: 'voivodeship',
     nullable: false,
-    unique: true,
+    unique: false,
   })
   voivodeship: string;
 

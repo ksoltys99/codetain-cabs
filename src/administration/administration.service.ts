@@ -4,12 +4,17 @@ import { EmailService } from '../email/email.service';
 import { UserDeleteDto } from '../user/dtos/user-delete.dto';
 import { User } from '../user/user.entity';
 import { Repository, DeleteResult } from 'typeorm';
+import { Address } from 'src/user/adress.entity';
+import { MapsService } from 'src/maps/maps.service';
 
 @Injectable()
 export class AdministrationService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Address)
+    private readonly addressRepository: Repository<Address>,
     private emailService: EmailService,
+    private mapsService: MapsService,
   ) {}
 
   async getUsers() {
@@ -19,6 +24,10 @@ export class AdministrationService {
         addressWithCoords: true,
       },
     });
+  }
+
+  async getAddresses() {
+    return this.addressRepository.find();
   }
 
   async deleteUser(deleteDto: UserDeleteDto) {
@@ -36,5 +45,14 @@ export class AdministrationService {
 
   async clearRepositories() {
     this.userRepository.clear();
+  }
+
+  async getDistance() {
+    // return this.mapsService.getDistance(
+    //   'Zielona Góra, Lubuskie, Polska',
+    //   'Nowa Sól, Lubuskie, Polska',
+    // );
+
+    return this.mapsService.getPostalCodePrefix('Zielona Góra, Lubuskie');
   }
 }

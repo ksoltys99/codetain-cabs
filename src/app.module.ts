@@ -8,6 +8,7 @@ import { DatabaseModule } from './database/database.module';
 import { AdministrationModule } from './administration/administration.module';
 import { JourneyModule } from './journey/journey.module';
 import { MapsModule } from './maps/maps.module';
+import { FleetModule } from './fleet/fleet.module';
 
 @Dependencies(DataSource)
 @Module({
@@ -21,6 +22,7 @@ import { MapsModule } from './maps/maps.module';
     AdministrationModule,
     JourneyModule,
     MapsModule,
+    FleetModule,
   ],
   controllers: [],
   providers: [],

@@ -22,6 +22,7 @@ export class UserService {
   ) {}
   async addUser(addUserDto: UserWithAddressDto) {
     const newUser = this.userRepository.create(addUserDto);
+
     newUser.confirmationCode = await this.emailService.createActivationLink(
       newUser.email,
       newUser.id,
@@ -31,6 +32,9 @@ export class UserService {
       addUserDto?.secret === this.configService.get('ADMIN_SECRET_KEY')
         ? new Role('admin')
         : new Role('user');
+
+    const userAddress = await this.getAddress(newUser.addressWithCoords);
+    if (userAddress) newUser.addressWithCoords = userAddress;
 
     await this.userRepository.save(newUser);
     return newUser;
@@ -93,5 +97,7 @@ export class UserService {
       );
   }
 
-  addAddress() {}
+  async getAddress(address: Address) {
+    return this.addressRepository.findOneBy({ name: address.name });
+  }
 }

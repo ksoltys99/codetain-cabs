@@ -59,8 +59,11 @@ describe('UserService', () => {
       surname: 'testsurname',
       dateOfBirth: new Date('19:01:2000T00:00:01'),
       address: 'testaddress',
-      coordsLat: '0',
-      coordsLng: '0',
+      addressWithCoords: {
+        name: 'testaddress',
+        coordsLat: '0',
+        coordsLng: '0',
+      },
     };
 
     it('should not change user data', async () => {

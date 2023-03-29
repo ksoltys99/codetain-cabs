@@ -14,6 +14,12 @@ export class AdministrationController {
   }
 
   @UseGuards(RoleGuard)
+  @Get('addresses')
+  getAddresses() {
+    return this.administrationService.getAddresses();
+  }
+
+  @UseGuards(RoleGuard)
   @Delete('delete')
   async deleteUser(@Body() user: UserDeleteDto, @Res() res) {
     await this.administrationService.deleteUser(user);

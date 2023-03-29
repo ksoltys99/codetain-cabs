@@ -53,25 +53,6 @@ export class User {
   })
   dateOfBirth: Date;
 
-  // @Column({
-  //   name: 'address',
-  //   nullable: false,
-  //   default: '',
-  // })
-  // address: string;
-
-  // @Column({
-  //   name: 'coords_lat',
-  //   nullable: true,
-  // })
-  // coordsLat: string;
-
-  // @Column({
-  //   name: 'coords_lng',
-  //   nullable: true,
-  // })
-  // coordsLng: string;
-
   @Column({
     name: 'verified',
     nullable: false,

@@ -5,6 +5,8 @@ import { User } from '../user/user.entity';
 import { Role } from '../role/role.entity';
 import { Zone } from '../journey/zone.entity';
 import { Address } from '../user/adress.entity';
+import { Car } from '../fleet/car.entity';
+import { StandardRoute } from '../journey/standardRoute.entity';
 
 @Module({
   imports: [
@@ -17,7 +19,7 @@ import { Address } from '../user/adress.entity';
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [User, Role, Zone, Address],
+        entities: [User, Role, Zone, Address, Car, StandardRoute],
         synchronize: true,
       }),
       inject: [ConfigService],
