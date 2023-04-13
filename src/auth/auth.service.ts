@@ -12,7 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { TokenPayload } from './tokenPayload.interface';
 import { EmailService } from '../email/email.service';
 import { MapsService } from '../maps/maps.service';
-import { UserWithAddressDto } from 'src/user/dtos/userWithCoords.dto';
+import { JourneyService } from '../journey/journey.service';
 
 @Injectable()
 export class AuthService {
@@ -22,11 +22,12 @@ export class AuthService {
     private configService: ConfigService,
     private emailService: EmailService,
     private mapsService: MapsService,
+    private journeyService: JourneyService,
   ) {}
 
   public async register(registrationData: AddUserDto) {
     const userCoords = await this.mapsService.getGeolocalisation(
-      registrationData.address,
+      registrationData.address.city,
     );
     const hashedPassword = await bcrypt.hash(registrationData.password, 10);
     try {
@@ -34,9 +35,15 @@ export class AuthService {
         ...registrationData,
         password: hashedPassword,
         addressWithCoords: {
-          name: registrationData.address,
+          city: registrationData.address.city,
+          postalCode: registrationData.address.postalCode,
+          street: registrationData.address.street,
+          building: registrationData.address.building,
           coordsLat: userCoords.lat,
           coordsLng: userCoords.lng,
+          zone: await this.journeyService.getZone(
+            registrationData.address.postalCode.substring(0, 2),
+          ),
         },
       });
 

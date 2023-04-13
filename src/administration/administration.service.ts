@@ -4,8 +4,8 @@ import { EmailService } from '../email/email.service';
 import { UserDeleteDto } from '../user/dtos/user-delete.dto';
 import { User } from '../user/user.entity';
 import { Repository, DeleteResult } from 'typeorm';
-import { Address } from 'src/user/adress.entity';
-import { MapsService } from 'src/maps/maps.service';
+import { Address } from '../shared/address.entity';
+import { MapsService } from '../maps/maps.service';
 
 @Injectable()
 export class AdministrationService {
@@ -45,14 +45,5 @@ export class AdministrationService {
 
   async clearRepositories() {
     this.userRepository.clear();
-  }
-
-  async getDistance() {
-    // return this.mapsService.getDistance(
-    //   'Zielona Góra, Lubuskie, Polska',
-    //   'Nowa Sól, Lubuskie, Polska',
-    // );
-
-    return this.mapsService.getPostalCodePrefix('Zielona Góra, Lubuskie');
   }
 }

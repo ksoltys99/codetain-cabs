@@ -4,11 +4,12 @@ import {
   Post,
   UseGuards,
   Delete,
+  Req,
   Res,
   ValidationPipe,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { Body, UsePipes } from '@nestjs/common/decorators';
 import { JourneyService } from './journey.service';
 import { AddZoneDto } from './dtos/add-zone.dto';
@@ -40,13 +41,31 @@ export class JourneyController {
     return this.journeyService.getZones();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('ordered')
+  async getOrderedTravels() {
+    return this.journeyService.getOrderedTravels();
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('route/custom')
-  async createCustomRoute(@Body() data: CustomRouteDto) {
+  async createCustomRoute(
+    @Body() data: CustomRouteDto,
+    @Req() request: Request,
+  ) {
     return await this.journeyService.createCustomTravel(
       data.startAddress,
       data.endAddress,
       data.vin,
+      data.date,
+      request.cookies,
     );
+  }
+
+  @Get('route/confirm/:token')
+  async confirmTravel(@Req() request: Request) {
+    const token = request.params.token;
+    return this.journeyService.confirmTravel(token);
   }
 
   //temp

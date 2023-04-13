@@ -1,4 +1,6 @@
-import { IsNotEmpty, IsOptional, IsPositive } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
+import { PriceDto } from 'src/shared/dtos/price.dto';
+import { CarStateDto } from './car-state.dto';
 
 export class AddCarDto {
   @IsNotEmpty()
@@ -8,15 +10,11 @@ export class AddCarDto {
   currentLocation: string;
 
   @IsNotEmpty()
-  @IsPositive()
-  pricePerKmPLN: number;
+  price: PriceDto;
 
   @IsNotEmpty()
   totalSeats: number;
 
-  @IsOptional()
-  takenSeats?: number;
-
-  @IsOptional()
-  isAvailable?: boolean;
+  @IsNotEmpty()
+  state: CarStateDto;
 }

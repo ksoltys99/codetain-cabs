@@ -10,7 +10,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { RoleGuard } from 'src/role/role.guard';
+import { RoleGuard } from '../role/role.guard';
 import { AddCarDto } from './dtos/addCar.dto';
 import { UpdateCarDto } from './dtos/updateCar.dto';
 import { FleetService } from './fleet.service';
@@ -23,20 +23,28 @@ export class FleetController {
   @UseGuards(RoleGuard)
   @UsePipes(ValidationPipe)
   @Post()
-  addCar(@Body() car: AddCarDto) {
+  async addCar(@Body() car: AddCarDto) {
+    if (car.price.value <= 0) return 'Price must be a positive number';
     return this.fleetService.addCar(car);
   }
 
   @UseGuards(RoleGuard)
   @UsePipes(ValidationPipe)
   @Put()
-  updateCar(@Body() car: UpdateCarDto) {
+  async updateCar(@Body() car: UpdateCarDto) {
     return this.fleetService.updateCar(car);
   }
 
   @UseGuards(RoleGuard)
   @UsePipes(ValidationPipe)
-  @Get()
+  @Get('cars/available')
+  async getAvailableCars() {
+    return this.fleetService.getAvailableCars();
+  }
+
+  @UseGuards(RoleGuard)
+  @UsePipes(ValidationPipe)
+  @Get('cars')
   getCars() {
     return this.fleetService.getCars();
   }

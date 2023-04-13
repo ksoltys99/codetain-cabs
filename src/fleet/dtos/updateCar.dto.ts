@@ -1,13 +1,14 @@
 import { IsNotEmpty, IsOptional, IsPositive } from 'class-validator';
+import { CarState } from '../car-state.entity';
+import { PriceDto } from 'src/shared/dtos/price.dto';
 
 export class UpdateCarDto {
   @IsNotEmpty()
   vin: string;
 
   @IsNotEmpty()
-  currentLocation: string;
+  state: CarState;
 
   @IsOptional()
-  @IsPositive()
-  pricePerKmPLN?: number;
+  price?: PriceDto;
 }

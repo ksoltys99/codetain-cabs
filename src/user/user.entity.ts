@@ -7,7 +7,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Address } from './adress.entity';
+import { Address } from '../shared/address.entity';
 
 @Entity()
 export class User {

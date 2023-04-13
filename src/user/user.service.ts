@@ -9,7 +9,8 @@ import * as bcrypt from 'bcryptjs';
 import { Role } from '../role/role.entity';
 import { ConfigService } from '@nestjs/config';
 import { UserWithAddressDto } from './dtos/userWithCoords.dto';
-import { Address } from './adress.entity';
+import { Address } from '../shared/address.entity';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
@@ -19,6 +20,7 @@ export class UserService {
     private readonly addressRepository: Repository<Address>,
     private emailService: EmailService,
     private readonly configService: ConfigService,
+    private jwtSerivce: JwtService,
   ) {}
   async addUser(addUserDto: UserWithAddressDto) {
     const newUser = this.userRepository.create(addUserDto);
@@ -98,6 +100,23 @@ export class UserService {
   }
 
   async getAddress(address: Address) {
-    return this.addressRepository.findOneBy({ name: address.name });
+    return this.addressRepository.findOne({
+      where: {
+        city: address.city,
+        street: address.street,
+        building: address.building,
+      },
+    });
+  }
+
+  getUserFromCookies(cookies: string): Promise<User> {
+    //TODO: swap jsonwebtoken to jose
+    const decodedPayload: any = this.jwtSerivce.decode(cookies);
+    return this.userRepository.findOne({
+      where: { email: decodedPayload.email },
+      relations: {
+        addressWithCoords: true,
+      },
+    });
   }
 }

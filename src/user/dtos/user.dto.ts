@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty, IsOptional, MinLength } from 'class-validator';
+import { AddressDto } from 'src/shared/dtos/address.dto';
 
 export class AddUserDto {
   @IsNotEmpty()
@@ -19,7 +20,7 @@ export class AddUserDto {
   dateOfBirth: Date;
 
   @IsNotEmpty()
-  address: string;
+  address: AddressDto;
 
   @IsOptional()
   secret?: string;

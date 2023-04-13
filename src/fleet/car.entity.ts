@@ -1,4 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
+import { CarState } from './car-state.entity';
+import { Price } from '../shared/price.entity';
+import { Fleet } from './fleet.enity';
 
 @Entity()
 export class Car {
@@ -9,25 +19,17 @@ export class Car {
   id: number;
 
   @Column({
-    name: 'vim',
+    name: 'vin',
     nullable: false,
     unique: true,
   })
   vin: string;
 
-  @Column({
-    name: 'current_location',
-    nullable: false,
-    unique: false,
+  @ManyToOne(() => Price, (entity) => entity, {
+    cascade: ['insert', 'update'],
   })
-  currentLocation: string;
-
-  @Column({
-    name: 'price_per_km_PLN',
-    nullable: false,
-    unique: false,
-  })
-  pricePerKmPLN: number;
+  @JoinColumn()
+  price: Price;
 
   @Column({
     name: 'total_seats',
@@ -36,19 +38,14 @@ export class Car {
   })
   totalSeats: number;
 
-  @Column({
-    name: 'taken_seats',
-    nullable: false,
-    unique: false,
-    default: 0,
+  @OneToOne(() => CarState, (entity) => entity, {
+    cascade: true,
+    onDelete: 'CASCADE',
   })
-  takenSeats: number;
+  @JoinColumn()
+  state: CarState;
 
-  @Column({
-    name: 'is_available',
-    nullable: false,
-    unique: false,
-    default: true,
-  })
-  isAvailable: boolean;
+  @ManyToOne(() => Fleet, (entity) => entity)
+  @JoinColumn()
+  fleet: Fleet;
 }

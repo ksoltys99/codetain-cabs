@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
+import { Address } from 'src/shared/address.entity';
 
 @Entity()
 export class StandardRoute {
@@ -8,19 +15,17 @@ export class StandardRoute {
   })
   id: number;
 
-  @Column({
-    name: 'start_address',
-    nullable: false,
-    unique: false,
+  @ManyToOne(() => Address, (entity) => entity, {
+    cascade: true,
   })
-  startAddress: string;
+  @JoinColumn()
+  startAddress: Address;
 
-  @Column({
-    name: 'end_address',
-    nullable: false,
-    unique: false,
+  @ManyToOne(() => Address, (entity) => entity, {
+    cascade: true,
   })
-  endAddress: string;
+  @JoinColumn()
+  endAddress: Address;
 
   @Column({
     name: 'distance',
@@ -34,7 +39,7 @@ export class StandardRoute {
     nullable: false,
     unique: false,
   })
-  travelTime: string;
+  duration: string;
 
   @Column({
     name: 'price',

@@ -9,6 +9,7 @@ import { AdministrationModule } from './administration/administration.module';
 import { JourneyModule } from './journey/journey.module';
 import { MapsModule } from './maps/maps.module';
 import { FleetModule } from './fleet/fleet.module';
+import { SharedModule } from './shared/shared.module';
 
 @Dependencies(DataSource)
 @Module({
@@ -23,6 +24,7 @@ import { FleetModule } from './fleet/fleet.module';
     JourneyModule,
     MapsModule,
     FleetModule,
+    SharedModule,
   ],
   controllers: [],
   providers: [],
