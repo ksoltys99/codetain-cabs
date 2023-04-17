@@ -10,6 +10,7 @@ import { JourneyModule } from './journey/journey.module';
 import { MapsModule } from './maps/maps.module';
 import { FleetModule } from './fleet/fleet.module';
 import { SharedModule } from './shared/shared.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Dependencies(DataSource)
 @Module({
@@ -25,6 +26,7 @@ import { SharedModule } from './shared/shared.module';
     MapsModule,
     FleetModule,
     SharedModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [],
   providers: [],

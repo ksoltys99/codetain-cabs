@@ -8,7 +8,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Address } from '../shared/address.entity';
+import { StandardRoute } from './standardRoute.entity';
 
 @Entity()
 export class OrderedTravel {
@@ -18,25 +18,6 @@ export class OrderedTravel {
   })
   id?: number;
 
-  @ManyToOne(() => Address, (entity) => entity, {
-    cascade: true,
-  })
-  @JoinColumn()
-  startAddress: Address;
-
-  @ManyToOne(() => Address, (entity) => entity, {
-    cascade: true,
-  })
-  @JoinColumn()
-  endAddress: Address;
-
-  @Column({
-    name: 'distance_in_km',
-    nullable: false,
-    unique: false,
-  })
-  distanceInKm: number;
-
   @Column({
     name: 'date',
     nullable: false,
@@ -44,12 +25,11 @@ export class OrderedTravel {
   })
   date: Date;
 
-  @Column({
-    name: 'duration',
-    nullable: false,
-    unique: false,
+  @ManyToOne(() => StandardRoute, (entity) => entity, {
+    cascade: true,
   })
-  duration: string;
+  @JoinColumn()
+  route: StandardRoute;
 
   @ManyToOne(() => Price, (entity) => entity, {
     cascade: true,

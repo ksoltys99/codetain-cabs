@@ -5,7 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
 } from 'typeorm';
-import { Address } from 'src/shared/address.entity';
+import { Address } from '../shared/address.entity';
 
 @Entity()
 export class StandardRoute {
@@ -35,16 +35,9 @@ export class StandardRoute {
   distance: string;
 
   @Column({
-    name: 'travel_time',
+    name: 'duration',
     nullable: false,
     unique: false,
   })
   duration: string;
-
-  @Column({
-    name: 'price',
-    nullable: false,
-    unique: false,
-  })
-  price: string;
 }

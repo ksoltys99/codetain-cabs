@@ -8,19 +8,22 @@ import {
   Res,
   ValidationPipe,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request, Response } from 'express';
 import { Body, UsePipes } from '@nestjs/common/decorators';
 import { JourneyService } from './journey.service';
 import { AddZoneDto } from './dtos/add-zone.dto';
 import { DeleteZoneDto } from './dtos/delete-zone.dto';
-import { CustomRouteDto } from './dtos/custom-route.dto';
+import { OrderTravelDto } from './dtos/orderTravel.dto';
+import { RoleGuard } from 'src/role/role.guard';
+import { AddRouteDto } from './dtos/add-route.dto';
+import { Role } from 'src/role/role.enum';
+import { ChooseRouteDto } from './dtos/chooseRoute.dto';
 
 @Controller('journey')
 export class JourneyController {
   constructor(private readonly journeyService: JourneyService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(RoleGuard(Role.Admin))
   @UsePipes(ValidationPipe)
   @Post('zone')
   async addZone(@Body() zoneData: AddZoneDto, @Res() res: Response) {
@@ -28,35 +31,46 @@ export class JourneyController {
     return res.status(200).send('Zone added');
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(RoleGuard(Role.Admin))
   @Delete('zone')
   async deleteZone(@Body() data: DeleteZoneDto, @Res() res: Response) {
     await this.journeyService.deleteZone(data.postalCodePrefix);
     return res.status(200).send('Zone deleted');
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(RoleGuard(Role.Admin))
   @Get('zone')
   async getZone() {
-    return this.journeyService.getZones();
+    return await this.journeyService.getZones();
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('ordered')
+  @UseGuards(RoleGuard(Role.Admin))
+  @Get('route/ordered')
   async getOrderedTravels() {
-    return this.journeyService.getOrderedTravels();
+    return await this.journeyService.getOrderedTravels();
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('route/custom')
-  async createCustomRoute(
-    @Body() data: CustomRouteDto,
-    @Req() request: Request,
-  ) {
-    return await this.journeyService.createCustomTravel(
+  @UseGuards(RoleGuard(Role.Admin))
+  @Post('route')
+  async addRoute(@Body() data: AddRouteDto, @Req() request: Request) {
+    return await this.journeyService.addRoute(data);
+  }
+
+  @UseGuards(RoleGuard(Role.User))
+  @Post('route/show')
+  async getRoutes(@Body() data: ChooseRouteDto, @Req() request: Request) {
+    return await this.journeyService.getRelatedTravels(
       data.startAddress,
       data.endAddress,
-      data.vin,
+      request.cookies,
+    );
+  }
+
+  @UseGuards(RoleGuard(Role.User))
+  @Post('route/order')
+  async orderTravel(@Body() data: OrderTravelDto, @Req() request: Request) {
+    return await this.journeyService.orderTravel(
+      data.routeId,
       data.date,
       request.cookies,
     );
@@ -66,11 +80,5 @@ export class JourneyController {
   async confirmTravel(@Req() request: Request) {
     const token = request.params.token;
     return this.journeyService.confirmTravel(token);
-  }
-
-  //temp
-  @Post('postal')
-  async getPostalCode(@Body() data) {
-    return this.journeyService.getPostalPrefix(data.address);
   }
 }

@@ -7,9 +7,6 @@ export class AddCarDto {
   vin: string;
 
   @IsNotEmpty()
-  currentLocation: string;
-
-  @IsNotEmpty()
   price: PriceDto;
 
   @IsNotEmpty()
