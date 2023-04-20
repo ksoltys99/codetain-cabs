@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { forwardRef } from '@nestjs/common/utils';
 import { PassportModule } from '@nestjs/passport';
 import { UserModule } from '../user/user.module';
 import { AuthService } from './auth.service';
@@ -9,10 +8,12 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { EmailModule } from '../email/email.module';
+import { MapsModule } from '../maps/maps.module';
+import { JourneyModule } from '../journey/journey.module';
 
 @Module({
   imports: [
-    forwardRef(() => UserModule),
+    UserModule,
     PassportModule,
     ConfigModule.forRoot(),
     JwtModule.register({
@@ -20,6 +21,8 @@ import { EmailModule } from '../email/email.module';
       signOptions: { expiresIn: '3600s' },
     }),
     EmailModule,
+    MapsModule,
+    JourneyModule,
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService, LocalStrategy],

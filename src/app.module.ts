@@ -6,6 +6,11 @@ import { AuthModule } from './auth/auth.module';
 import { EmailModule } from './email/email.module';
 import { DatabaseModule } from './database/database.module';
 import { AdministrationModule } from './administration/administration.module';
+import { JourneyModule } from './journey/journey.module';
+import { MapsModule } from './maps/maps.module';
+import { FleetModule } from './fleet/fleet.module';
+import { SharedModule } from './shared/shared.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Dependencies(DataSource)
 @Module({
@@ -17,6 +22,11 @@ import { AdministrationModule } from './administration/administration.module';
     EmailModule,
     DatabaseModule,
     AdministrationModule,
+    JourneyModule,
+    MapsModule,
+    FleetModule,
+    SharedModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [],
   providers: [],

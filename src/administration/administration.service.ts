@@ -1,25 +1,33 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EmailService } from 'src/email/email.service';
-import { UserDeleteDto } from 'src/user/dtos/user-delete.dto';
-import { Role } from 'src/user/user-role.entity';
-import { User } from 'src/user/user.entity';
+import { EmailService } from '../email/email.service';
+import { UserDeleteDto } from '../user/dtos/user-delete.dto';
+import { User } from '../user/user.entity';
 import { Repository, DeleteResult } from 'typeorm';
+import { Address } from '../shared/address.entity';
+import { MapsService } from '../maps/maps.service';
 
 @Injectable()
 export class AdministrationService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
+    @InjectRepository(Address)
+    private readonly addressRepository: Repository<Address>,
     private emailService: EmailService,
+    private mapsService: MapsService,
   ) {}
 
   async getUsers() {
     return this.userRepository.find({
       relations: {
         role: true,
+        addressWithCoords: true,
       },
     });
+  }
+
+  async getAddresses() {
+    return this.addressRepository.find();
   }
 
   async deleteUser(deleteDto: UserDeleteDto) {

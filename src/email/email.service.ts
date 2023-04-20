@@ -4,6 +4,7 @@ import * as Mail from 'nodemailer/lib/mailer';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/user.entity';
+import { OrderedTravelMetadata } from 'src/journey/orderedTravelMetadata.interface';
 
 @Injectable()
 export class EmailService {
@@ -45,5 +46,19 @@ export class EmailService {
   async createActivationLink(email: string, id: number) {
     const token = this.jwtService.sign({ username: email, sub: id });
     return token;
+  }
+
+  async sendTravelConfirmationMail(metadata: OrderedTravelMetadata) {
+    const options: Mail.Options = {
+      from: 'codetaincabs.service@gmail.com',
+      to: metadata.email,
+      subject: 'Confirm your travel',
+      html: `<p>Click <a href="http://localhost:3000/route/confirm/${metadata.confirmationCode}">here</a> to confirm your travel: </p>
+      <p> From: ${metadata.startAddress.street}, ${metadata.startAddress.city}</p>
+      <p> To: ${metadata.startAddress.street}, ${metadata.startAddress.city}</p>
+      <p> Date: ${metadata.date} </p>
+      <p> Price: ${metadata.price}</p>`,
+    };
+    return this.nodemailerTransport.sendMail(options);
   }
 }

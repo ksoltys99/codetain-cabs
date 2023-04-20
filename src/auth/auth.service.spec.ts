@@ -4,7 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import { EmailService } from '../email/email.service';
 import { UserService } from '../user/user.service';
 import { ConfigService } from '@nestjs/config';
-import { AddUserDto } from 'src/user/dtos/user.dto';
+import { AddUserDto } from '../user/dtos/user.dto';
+import { MapsService } from '../maps/maps.service';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -22,7 +23,7 @@ describe('AuthService', () => {
         {
           provide: EmailService,
           useValue: {
-            sendMail: jest.fn((entity) => entity),
+            sendConfirmationMail: jest.fn((entity) => entity),
           },
         },
         {
@@ -34,6 +35,12 @@ describe('AuthService', () => {
         {
           provide: ConfigService,
           useValue: {},
+        },
+        {
+          provide: MapsService,
+          useValue: {
+            getGeolocalisation: jest.fn((entity) => entity),
+          },
         },
       ],
     }).compile();

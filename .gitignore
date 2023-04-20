@@ -40,3 +40,6 @@ docker.env
 run-db-dev.sh
 api-keys
 ormconfig.json
+
+# datasource
+/src/database/data.source.ts

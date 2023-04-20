@@ -1,11 +1,13 @@
-import { Role } from '../user/user-role.entity';
+import { Role } from '../role/role.entity';
 import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Address } from '../shared/address.entity';
 
 @Entity()
 export class User {
@@ -52,18 +54,17 @@ export class User {
   dateOfBirth: Date;
 
   @Column({
-    name: 'address',
-    nullable: false,
-    default: '',
-  })
-  address: string;
-
-  @Column({
     name: 'verified',
     nullable: false,
     default: false,
   })
   verified: boolean;
+
+  @ManyToOne(() => Address, (entity) => entity, {
+    cascade: true,
+  })
+  @JoinColumn()
+  addressWithCoords: Address;
 
   @Column({
     name: 'confirmationCode',
