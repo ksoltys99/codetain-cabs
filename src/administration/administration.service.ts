@@ -5,7 +5,6 @@ import { UserDeleteDto } from '../user/dtos/user-delete.dto';
 import { User } from '../user/user.entity';
 import { Repository, DeleteResult } from 'typeorm';
 import { Address } from '../shared/address.entity';
-import { MapsService } from '../maps/maps.service';
 
 @Injectable()
 export class AdministrationService {
@@ -14,7 +13,6 @@ export class AdministrationService {
     @InjectRepository(Address)
     private readonly addressRepository: Repository<Address>,
     private emailService: EmailService,
-    private mapsService: MapsService,
   ) {}
 
   async getUsers() {

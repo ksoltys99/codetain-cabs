@@ -2,13 +2,18 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Coords } from './coords.interface';
 import { MapsService } from './maps.service';
+import { Client } from '@googlemaps/google-maps-services-js';
 
 describe('MapsService', () => {
   let service: MapsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [MapsService, ConfigService],
+      providers: [
+        MapsService,
+        ConfigService,
+        { provide: 'GoogleMapsClient', useClass: Client },
+      ],
     }).compile();
 
     service = module.get<MapsService>(MapsService);

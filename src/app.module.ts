@@ -11,6 +11,8 @@ import { MapsModule } from './maps/maps.module';
 import { FleetModule } from './fleet/fleet.module';
 import { SharedModule } from './shared/shared.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ZoneModule } from './zone/zone.module';
+import { RouteScheduleModule } from './route-schedule/routeSchedule.module';
 
 @Dependencies(DataSource)
 @Module({
@@ -27,6 +29,9 @@ import { ScheduleModule } from '@nestjs/schedule';
     FleetModule,
     SharedModule,
     ScheduleModule.forRoot(),
+    ZoneModule,
+    ScheduleModule,
+    RouteScheduleModule,
   ],
   controllers: [],
   providers: [],

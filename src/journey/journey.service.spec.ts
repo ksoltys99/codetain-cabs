@@ -1,49 +1,75 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Repository } from 'typeorm';
 import { JourneyService } from './journey.service';
-import { Zone } from './zone.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { HttpException } from '@nestjs/common';
+import { StandardRoute } from './standardRoute.entity';
+import { UpcomingRoute } from './upcomingRoute.entity';
+import { OrderedTravel } from './orderedTravel.entity';
+import { MapsService } from '../maps/maps.service';
+import { FleetService } from '../fleet/fleet.service';
+import { EmailService } from '../email/email.service';
+import { SharedService } from '../shared/shared.service';
 
 describe('JourneyService', () => {
   let service: JourneyService;
-  let mockRepository: Repository<Zone>;
+  let routeRepository: Repository<StandardRoute>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         JourneyService,
         {
-          provide: getRepositoryToken(Zone),
+          provide: getRepositoryToken(StandardRoute),
           useValue: {
             create: jest.fn((entity) => entity),
             save: jest.fn((entity) => entity),
             delete: jest.fn((entity) => entity),
           },
         },
+        {
+          provide: getRepositoryToken(UpcomingRoute),
+          useValue: {
+            create: jest.fn((entity) => entity),
+            save: jest.fn((entity) => entity),
+            find: jest.fn((entity) => entity),
+            update: jest.fn((entity) => entity),
+            delete: jest.fn((entity) => entity),
+          },
+        },
+        {
+          provide: getRepositoryToken(OrderedTravel),
+          useValue: {
+            create: jest.fn((entity) => entity),
+            save: jest.fn((entity) => entity),
+            find: jest.fn((entity) => entity),
+            update: jest.fn((entity) => entity),
+            delete: jest.fn((entity) => entity),
+          },
+        },
+        {
+          provide: MapsService,
+          useValue: {},
+        },
+        {
+          provide: FleetService,
+          useValue: {},
+        },
+        {
+          provide: EmailService,
+          useValue: {},
+        },
+        {
+          provide: SharedService,
+          useValue: {},
+        },
       ],
     }).compile();
 
     service = module.get<JourneyService>(JourneyService);
-    mockRepository = module.get(getRepositoryToken(Zone));
+    routeRepository = module.get(getRepositoryToken(StandardRoute));
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-  });
-
-  describe('when adding new zone', () => {
-    it('should return zone', () => {
-      const mockZone = { voivodeship: 'zone name', postalCodePrefix: '68-320' };
-      const result = service.addZone(mockZone);
-      expect(result).resolves.toBe(mockZone);
-    });
-  });
-
-  describe('when deleting zone', () => {
-    it('should throw exception if promise is rejected', () => {
-      const result = service.deleteZone('zone');
-      expect(result).rejects.toThrow(HttpException);
-    });
   });
 });

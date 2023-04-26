@@ -1,162 +1,108 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
-import { Zone } from './zone.entity';
-import { AddZoneDto } from './dtos/add-zone.dto';
+import { Repository } from 'typeorm';
 import { StandardRoute } from './standardRoute.entity';
 import { MapsService } from '../maps/maps.service';
 import { FleetService } from '../fleet/fleet.service';
-import { UserService } from '../user/user.service';
 import { OrderedTravel } from './orderedTravel.entity';
 import { EmailService } from '../email/email.service';
-import { AddressDto } from '../shared/dtos/address.dto';
 import { RouteMetadata } from './routeMetadata.interface';
-import { AddRouteDto } from './dtos/add-route.dto';
-import { Cron } from '@nestjs/schedule';
-import { OrderedTravelMetadata } from './orderedTravelMetadata.interface';
-import { PostgresErrorCode } from 'src/database/postgresErrorCodes.enum';
+import { User } from '../user/user.entity';
+import { UpcomingRoute } from './upcomingRoute.entity';
+import { UpdateRouteDto } from './dtos/updateRoute.dto';
+import { SharedService } from '../shared/shared.service';
 
 @Injectable()
 export class JourneyService {
   constructor(
-    @InjectRepository(Zone) private zoneRepository: Repository<Zone>,
     @InjectRepository(StandardRoute)
     private routeRepository: Repository<StandardRoute>,
     private mapsService: MapsService,
     private fleetService: FleetService,
-    private userService: UserService,
     @InjectRepository(OrderedTravel)
     private orderedTravelRepository: Repository<OrderedTravel>,
     private emailService: EmailService,
+    @InjectRepository(UpcomingRoute)
+    private upcomingRouteRepository: Repository<UpcomingRoute>,
+    private sharedService: SharedService,
   ) {}
-  async addZone(zone: AddZoneDto) {
-    try {
-      const newZone = this.zoneRepository.create(zone);
-      await this.zoneRepository.save(newZone);
-      return newZone;
-    } catch (error) {
-      if (error?.code === PostgresErrorCode.UniqueViolation) {
-        throw new HttpException(
-          'That zone already exists',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    }
-  }
-  async deleteZone(postalCodePrefix: string) {
-    const result: DeleteResult = await this.zoneRepository.delete({
-      postalCodePrefix: postalCodePrefix,
-    });
-    if (!result.affected)
-      throw new HttpException(
-        'Could not delete resource',
-        HttpStatus.BAD_REQUEST,
-      );
-  }
-
-  async getZones() {
-    return await this.zoneRepository.find();
-  }
-
-  async getZone(postalCodePrefix: string) {
-    return await this.zoneRepository.findOneBy({ postalCodePrefix });
-  }
 
   async getRoutes() {
-    return await this.routeRepository.find();
+    return await this.routeRepository.find({
+      relations: { startAddress: true, endAddress: true, day: true },
+    });
   }
 
   async getOrderedTravels() {
-    return await this.orderedTravelRepository.find();
+    return await this.orderedTravelRepository.find({
+      relations: { user: true },
+    });
   }
 
-  getTravelPrice(distanceInMeters: number, pricePerKm: number) {
-    return Math.ceil(distanceInMeters / 1000) * pricePerKm;
+  getTravelPrice(distanceInKm: number, pricePerKm: number) {
+    return distanceInKm * pricePerKm;
   }
 
-  async addRoute(data: AddRouteDto) {
-    const detailedStartAddress = `${data.startAddress.street}, ${data.startAddress.postalCode} ${data.startAddress.city}`;
-    const detailedEndAddress = `${data.endAddress.street}, ${data.endAddress.postalCode} ${data.endAddress.city}`;
+  async addRoute(data: RouteMetadata) {
+    const route = this.routeRepository.create(data);
+    route.day = data.day;
+    const storedDay = await this.sharedService.getDay(data.day.name);
 
-    const startAddressCoords = await this.mapsService.getGeolocalisation(
-      detailedStartAddress,
-    );
-    const endAddressCoords = await this.mapsService.getGeolocalisation(
-      detailedEndAddress,
-    );
+    if (storedDay) route.day = storedDay;
 
-    const travelData = await this.mapsService.getTravelDetails(
-      detailedStartAddress,
-      detailedEndAddress,
-    );
-
-    const startAddressWithCoords = {
-      ...data.startAddress,
-      coordsLat: startAddressCoords.lat,
-      coordsLng: startAddressCoords.lng,
-    };
-    const endAddressWithCoords = {
-      ...data.endAddress,
-      coordsLat: endAddressCoords.lat,
-      coordsLng: endAddressCoords.lng,
-    };
-
-    const { travelTime, distance } = travelData;
-    const distanceInKm = Math.round(distance / 1000);
-
-    const metadata: RouteMetadata = {
-      startAddress: startAddressWithCoords,
-      endAddress: endAddressWithCoords,
-      distanceInKm: distanceInKm,
-      duration: travelTime,
-      days: data.days,
-      hour: data.hour,
-    };
-
-    const route = this.routeRepository.create(metadata);
-    return this.routeRepository.save(route);
+    try {
+      await this.routeRepository.save(route);
+    } catch (error) {
+      throw new HttpException('Could not add route', HttpStatus.CONFLICT);
+    }
   }
 
-  async orderTravel(travelId: number, date: string, cookies: any) {
-    const { Authentication } = cookies;
-    const loggedUser = await this.userService.getUserFromCookies(
-      Authentication,
-    );
+  async deleteRoutes() {
+    return await this.routeRepository.clear();
+  }
 
-    const route = await this.routeRepository.findOne({
+  async updateRoute(updateDto: UpdateRouteDto) {
+    const route = await this.routeRepository.findOneBy({ id: updateDto.id });
+    route.day = updateDto.day;
+    route.hour = updateDto.hour;
+    return await this.routeRepository.save(route);
+  }
+
+  async orderTravel(travelId: number, user: User) {
+    const route = await this.upcomingRouteRepository.findOne({
       where: { id: travelId },
       relations: {
-        startAddress: true,
-        endAddress: true,
+        route: { startAddress: true, endAddress: true },
       },
     });
 
     const availableCars = await this.fleetService.getAvailableCars();
-    if (!availableCars)
+    if (!availableCars.length)
       throw new HttpException(
         'No cars available. Please try again later',
         HttpStatus.GONE,
       );
 
     const choosenCar = availableCars[0];
+
     await this.fleetService.bookSeat(choosenCar);
     const price = this.getTravelPrice(
-      parseInt(route.distance),
+      route.route.distance,
       choosenCar.price.value,
     );
 
     const confirmationCode = await this.emailService.createActivationLink(
-      loggedUser.email,
-      loggedUser.id,
+      user.email,
+      user.id,
     );
 
     const metadata: OrderedTravel = {
-      route: route,
+      route: route.route,
       price: { value: price, currency: 'PLN' },
       confirmationCode: confirmationCode,
       car: choosenCar,
-      user: loggedUser,
-      date: new Date(date),
+      user: user,
+      date: route.date,
       status: 'pending',
     };
     const travel = this.orderedTravelRepository.create(metadata);
@@ -166,34 +112,23 @@ export class JourneyService {
     return {
       id: travel.id,
       status: travel.status,
-      distance: travel.route.distance,
+      distance: travel.route.distance + 'km',
       time: travel.route.duration,
       date: travel.date,
       price: travel.price,
     };
   }
 
-  async getRelatedTravels(
-    startAddress: AddressDto,
-    endAddress: AddressDto,
-    cookies: any,
-  ) {
-    const { Authentication } = cookies;
-    const loggedUser = await this.userService.getUserFromCookies(
-      Authentication,
-    );
-    if (!startAddress) startAddress = loggedUser.addressWithCoords;
-
-    if (!this.checkZone(startAddress)) return 'Origin zone is not supported';
-    if (!this.checkZone(endAddress)) return 'Destination zone is not supported';
-
-    const routes = await this.routeRepository.find();
+  async getRelatedTravels(startCity: string, endCity: string) {
+    const routes = await this.routeRepository.find({
+      relations: { startAddress: true, endAddress: true },
+    });
     const filtered = routes.filter(
       (route) =>
-        route.startAddress.city === startAddress.city &&
-        route.endAddress.city === endAddress.city,
+        route.startAddress.city === startCity &&
+        route.endAddress.city === endCity,
     );
-    if (filtered)
+    if (filtered.length)
       return {
         routes: filtered,
         message: 'Here are the routes that match your criteria',
@@ -222,40 +157,36 @@ export class JourneyService {
     return await this.mapsService.getPostalCodePrefix(address);
   }
 
-  async checkZone(address: AddressDto) {
-    const postalCodePrefix = address.postalCode.substring(0, 2);
-
-    if (
-      !(await this.zoneRepository.findOne({
-        where: { postalCodePrefix: postalCodePrefix },
-      }))
-    )
-      return false;
-
-    return true;
+  async getPendingOrders() {
+    return await this.orderedTravelRepository.find({
+      where: { status: 'pending' },
+      relations: {
+        user: true,
+        route: { startAddress: true, endAddress: true },
+        price: true,
+      },
+    });
   }
 
-  @Cron('0 * * * * *')
-  async handleNewOrders() {
-    const newOrders = await this.orderedTravelRepository.find({
-      where: { status: 'pending' },
-      relations: { user: true },
+  async saveOrders(orders: OrderedTravel[]) {
+    return await this.orderedTravelRepository.save(orders);
+  }
+
+  async saveUpcomingRoutes(routes: UpcomingRoute[]) {
+    return await this.upcomingRouteRepository.save(routes);
+  }
+
+  async showUpcomingRoutes() {
+    const routes = await this.upcomingRouteRepository.find({
+      relations: { route: { startAddress: true, endAddress: true } },
     });
 
-    if (!newOrders.length) return;
-    newOrders.forEach(async (order: OrderedTravel) => {
-      order.status = 'received';
-      const travelMetadata: OrderedTravelMetadata = {
-        startAddress: order.route.startAddress,
-        endAddress: order.route.endAddress,
-        distanceInKm: parseInt(order.route.distance),
-        duration: order.route.duration,
-        price: order.price,
-        email: order.user.email,
-        date: order.date,
-        confirmationCode: order.confirmationCode,
-      };
-      await this.emailService.sendTravelConfirmationMail(travelMetadata);
+    const upcoming = routes.filter((route: UpcomingRoute) => {
+      const routeDateInMs = route.date.getTime();
+      const dateNow = Date.now();
+
+      return dateNow < routeDateInMs;
     });
+    return upcoming;
   }
 }

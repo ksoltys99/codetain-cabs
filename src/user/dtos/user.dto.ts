@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsOptional, MinLength } from 'class-validator';
-import { AddressDto } from 'src/shared/dtos/address.dto';
+import { AddressDto } from '../../shared/dtos/address.dto';
 
 export class AddUserDto {
   @IsNotEmpty()

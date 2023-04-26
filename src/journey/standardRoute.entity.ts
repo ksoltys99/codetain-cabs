@@ -6,6 +6,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { Address } from '../shared/address.entity';
+import { Day } from '../shared/day.entity';
 
 @Entity()
 export class StandardRoute {
@@ -32,7 +33,7 @@ export class StandardRoute {
     nullable: false,
     unique: false,
   })
-  distance: string;
+  distance: number;
 
   @Column({
     name: 'duration',
@@ -40,4 +41,17 @@ export class StandardRoute {
     unique: false,
   })
   duration: string;
+
+  @ManyToOne(() => Day, (entity) => entity, {
+    cascade: true,
+  })
+  @JoinColumn()
+  day: Day;
+
+  @Column({
+    name: 'hour',
+    nullable: false,
+    unique: false,
+  })
+  hour: string;
 }

@@ -2,7 +2,7 @@ import { Controller, Get, Delete, Body, Res, UseGuards } from '@nestjs/common';
 import { AdministrationService } from './administration.service';
 import { UserDeleteDto } from '../user/dtos/user-delete.dto';
 import { RoleGuard } from '../role/role.guard';
-import { Role } from 'src/role/role.enum';
+import { Role } from '../role/role.enum';
 
 @Controller('administration')
 export class AdministrationController {

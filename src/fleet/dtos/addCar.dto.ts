@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsOptional } from 'class-validator';
-import { PriceDto } from 'src/shared/dtos/price.dto';
+import { IsNotEmpty } from 'class-validator';
+import { PriceDto } from '../../shared/dtos/price.dto';
 import { CarStateDto } from './car-state.dto';
 
 export class AddCarDto {

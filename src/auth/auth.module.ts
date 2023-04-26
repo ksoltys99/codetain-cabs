@@ -9,7 +9,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { EmailModule } from '../email/email.module';
 import { MapsModule } from '../maps/maps.module';
-import { JourneyModule } from '../journey/journey.module';
+import { ZoneModule } from 'src/zone/zone.module';
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { JourneyModule } from '../journey/journey.module';
     }),
     EmailModule,
     MapsModule,
-    JourneyModule,
+    ZoneModule,
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService, LocalStrategy],
