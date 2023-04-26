@@ -5,24 +5,22 @@ import { AddUserDto } from '../user/dtos/user.dto';
 import { HttpException } from '@nestjs/common/exceptions';
 import { HttpStatus } from '@nestjs/common/enums';
 import { PostgresErrorCode } from '../database/postgresErrorCodes.enum';
-import { Inject } from '@nestjs/common/decorators';
-import { forwardRef } from '@nestjs/common/utils';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { TokenPayload } from './tokenPayload.interface';
 import { EmailService } from '../email/email.service';
 import { MapsService } from '../maps/maps.service';
-import { JourneyService } from '../journey/journey.service';
+import { ZoneService } from '../zone/zone.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(forwardRef(() => UserService)) private userService: UserService,
+    private userService: UserService,
     private jwtService: JwtService,
     private configService: ConfigService,
     private emailService: EmailService,
     private mapsService: MapsService,
-    private journeyService: JourneyService,
+    private zoneService: ZoneService,
   ) {}
 
   public async register(registrationData: AddUserDto) {
@@ -41,7 +39,7 @@ export class AuthService {
           building: registrationData.address.building,
           coordsLat: userCoords.lat,
           coordsLng: userCoords.lng,
-          zone: await this.journeyService.getZone(
+          zone: await this.zoneService.getZone(
             registrationData.address.postalCode.substring(0, 2),
           ),
         },

@@ -4,7 +4,7 @@ import { config } from 'dotenv';
 import { User } from './src/user/user.entity';
 import { Role } from './src/role/role.entity';
 import { Address } from './src/shared/address.entity';
-import { Zone } from './src/journey/zone.entity';
+import { Zone } from './src/zone/zone.entity';
 import { Car } from './src/fleet/car.entity';
 import { StandardRoute } from './src/journey/standardRoute.entity';
 import { OrderedTravel } from './src/journey/orderedTravel.entity';

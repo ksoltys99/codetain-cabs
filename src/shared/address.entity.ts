@@ -1,4 +1,4 @@
-import { Zone } from '../journey/zone.entity';
+import { Zone } from '../zone/zone.entity';
 import {
   Column,
   Entity,

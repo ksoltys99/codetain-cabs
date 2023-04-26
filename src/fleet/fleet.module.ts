@@ -4,7 +4,7 @@ import { FleetController } from './fleet.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Car } from './car.entity';
 import { CarState } from './car-state.entity';
-import { Price } from 'src/shared/price.entity';
+import { Price } from '../shared/price.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Car, CarState, Price])],

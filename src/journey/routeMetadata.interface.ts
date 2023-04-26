@@ -1,11 +1,11 @@
-import { Days } from '../shared/days.type';
 import { Address } from '../shared/address.entity';
+import { Day } from '../shared/day.entity';
 
 export interface RouteMetadata {
   startAddress: Address;
   endAddress: Address;
-  distanceInKm: number;
+  distance: number;
   duration: string;
-  days: Days[];
+  day: Day;
   hour: string;
 }

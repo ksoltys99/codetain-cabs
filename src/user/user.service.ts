@@ -20,7 +20,7 @@ export class UserService {
     private readonly addressRepository: Repository<Address>,
     private emailService: EmailService,
     private readonly configService: ConfigService,
-    private jwtSerivce: JwtService,
+    private jwtService: JwtService,
   ) {}
   async addUser(addUserDto: UserWithAddressDto) {
     const newUser = this.userRepository.create(addUserDto);
@@ -111,9 +111,9 @@ export class UserService {
 
   getUserFromCookies(cookies: string): Promise<User> {
     //TODO: swap jsonwebtoken to jose
-    const decodedPayload: any = this.jwtSerivce.decode(cookies);
+    const decodedPayload: any = this.jwtService.decode(cookies);
     return this.userRepository.findOne({
-      where: { email: decodedPayload.email },
+      where: { email: decodedPayload.username },
       relations: {
         addressWithCoords: true,
       },

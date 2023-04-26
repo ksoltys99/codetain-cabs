@@ -6,6 +6,7 @@ import { UserService } from '../user/user.service';
 import { ConfigService } from '@nestjs/config';
 import { AddUserDto } from '../user/dtos/user.dto';
 import { MapsService } from '../maps/maps.service';
+import { ZoneService } from '../zone/zone.service';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -42,6 +43,12 @@ describe('AuthService', () => {
             getGeolocalisation: jest.fn((entity) => entity),
           },
         },
+        {
+          provide: ZoneService,
+          useValue: {
+            getGeolocalisation: jest.fn((entity) => entity),
+          },
+        },
       ],
     }).compile();
 
@@ -66,7 +73,12 @@ describe('AuthService', () => {
       name: 'test',
       surname: 'test',
       dateOfBirth: new Date(),
-      address: 'test',
+      address: {
+        city: 'test',
+        street: 'test',
+        building: '6',
+        postalCode: 'test',
+      },
     };
 
     it('should hash the password', async () => {

@@ -15,7 +15,8 @@ import { AddCarDto } from './dtos/addCar.dto';
 import { UpdateCarDto } from './dtos/updateCar.dto';
 import { FleetService } from './fleet.service';
 import { DeleteCarDto } from './dtos/deleteCar.dto';
-import { Role } from 'src/role/role.enum';
+import { Role } from '../role/role.enum';
+import * as vinValidator from 'vin-validator';
 
 @Controller('fleet')
 export class FleetController {
@@ -26,6 +27,7 @@ export class FleetController {
   @Post()
   async addCar(@Body() car: AddCarDto) {
     if (car.price.value <= 0) return 'Price must be a positive number';
+    if (!vinValidator.validate(car.vin)) return 'Vin number is not valid';
     return this.fleetService.addCar(car);
   }
 

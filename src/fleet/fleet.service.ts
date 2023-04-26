@@ -5,9 +5,9 @@ import { Car } from './car.entity';
 import { AddCarDto } from './dtos/addCar.dto';
 import { DeleteCarDto } from './dtos/deleteCar.dto';
 import { UpdateCarDto } from './dtos/updateCar.dto';
-import { Price } from 'src/shared/price.entity';
+import { Price } from '../shared/price.entity';
 import { CarStateDto } from './dtos/car-state.dto';
-import { PostgresErrorCode } from 'src/database/postgresErrorCodes.enum';
+import { PostgresErrorCode } from '../database/postgresErrorCodes.enum';
 
 @Injectable()
 export class FleetService {
@@ -27,7 +27,9 @@ export class FleetService {
           currency: car.price.currency,
         },
       });
-      if (price) newCar.price = price;
+      if (price) {
+        newCar.price = price;
+      }
 
       await this.carRepository.save(newCar);
       return newCar;
@@ -65,10 +67,10 @@ export class FleetService {
 
   async getAvailableCars() {
     const cars = await this.carRepository.find({
-      relations: { state: true },
+      relations: { state: true, price: true },
     });
 
-    return cars.find((car) => car.state.isAvailable === true);
+    return cars.filter((car) => car.state.isAvailable === true);
   }
 
   async findCar(vin: string) {

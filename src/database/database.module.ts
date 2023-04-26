@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from '../user/user.entity';
 import { Role } from '../role/role.entity';
-import { Zone } from '../journey/zone.entity';
+import { Zone } from '../zone/zone.entity';
 import { Address } from '../shared/address.entity';
 import { Car } from '../fleet/car.entity';
 import { StandardRoute } from '../journey/standardRoute.entity';
@@ -11,6 +11,8 @@ import { OrderedTravel } from '../journey/orderedTravel.entity';
 import { Price } from '../shared/price.entity';
 import { CarState } from '../fleet/car-state.entity';
 import { Fleet } from '../fleet/fleet.enity';
+import { Day } from '../shared/day.entity';
+import { UpcomingRoute } from '../journey/upcomingRoute.entity';
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { Fleet } from '../fleet/fleet.enity';
           Price,
           CarState,
           Fleet,
+          Day,
+          UpcomingRoute,
         ],
         synchronize: true,
       }),

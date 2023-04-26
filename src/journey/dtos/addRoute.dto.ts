@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 import { Address } from '../../shared/address.entity';
-import { Days } from 'src/shared/days.type';
+import { IDay } from '../../shared/day.interface';
 
 export class AddRouteDto {
   @IsNotEmpty()
@@ -10,7 +10,7 @@ export class AddRouteDto {
   endAddress: Address;
 
   @IsNotEmpty()
-  days: Days[];
+  day: IDay;
 
   @IsNotEmpty()
   hour: string;

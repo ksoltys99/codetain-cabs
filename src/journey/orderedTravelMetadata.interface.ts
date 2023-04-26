@@ -1,4 +1,4 @@
-import { Price } from 'src/shared/price.entity';
+import { Price } from '../shared/price.entity';
 import { Address } from '../shared/address.entity';
 
 export interface OrderedTravelMetadata {
